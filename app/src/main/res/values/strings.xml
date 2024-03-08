@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">To Do List</string>
+    <string name="select_date">Select date</string>
+    <string name="enter_task">Enter task</string>
+    <string name="task_finished">Task finished?</string>
+    <string name="delete_task">delete task</string>
+    <string name="show_date_pciker">show date picker</string>
+    <string name="save_edited_task">save edited task</string>
+    <string name="select_time">Select time</string>
+    <string name="clear_date_input">clear date input</string>
+    <string name="clear_time_input">clear time input</string>
+    <string name="show_time_picker">show time picker</string>
+    <string name="save_task">save task</string>
+    <string name="no_tasks_available">No tasks available</string>
+    <string name="create_new_task">create new task</string>
+    <string name="type">Type</string>
+    <string name="light_mode">Light mode</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="default_mode">Default mode</string>
+</resources>

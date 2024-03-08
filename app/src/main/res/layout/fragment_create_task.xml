@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.text.InputType"/>
+        <import type="android.view.View"/>
+        <import type="com.google.android.material.textfield.TextInputEditText"/>
+
+        <variable
+            name="fragmentCreateTaskDataBindingVariable"
+            type="com.example.todolist.ui.uielements.fragments.CreateTaskFragment" />
+        <variable
+            name="fragmentsUtilityClassVariable"
+            type="com.example.todolist.ui.uielements.FragmentsUtility" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/createTaskFragmentToolbar"
+            style="@style/customToolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="Create Task" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/_10sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/createTaskFragmentToolbar">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/createTaskFragmentToolbar">
+
+                <TextView
+                    android:id="@+id/whatIsToBeDoneTextView"
+                    style="@style/customTaskTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/taskTextInputLayout"
+                    style="@style/customTextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_12sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_12sdp"
+                    app:endIconMode="clear_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/whatIsToBeDoneTextView">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/taskTextInputEditText"
+                        style="@style/customTextInputEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/enter_task"
+                        tools:ignore="TextContrastCheck" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/dueDateTextView"
+                    style="@style/customTaskDateTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_30sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/taskTextInputLayout" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/dateOptionCL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/dueDateTextView">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/dateTextInputLayout"
+                        style="@style/customTextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        app:layout_constraintEnd_toStartOf="@+id/calendarAndRemoveDateLL"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.5">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/taskDateTextInputEditText"
+                            style="@style/customTextInputEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/select_date"
+                            android:inputType="@{InputType.TYPE_NULL}"
+                            android:maxLength="17"
+                            android:onClick="@{() -> fragmentCreateTaskDataBindingVariable.showDatePickerAndGetDate(taskDateTextInputEditText)}"
+                            android:onFocusChange="@{(v, hasFocus) -> fragmentCreateTaskDataBindingVariable.onDateTextInputEditTextFocus(hasFocus)}"
+                            android:onTextChanged="@{(s, start, count, before) -> fragmentsUtilityClassVariable.dateTextInputEditTextTextWatcher(s, removeDateImageView, timeOptionCL, taskTimeTextInputEditText)}"
+                            android:textCursorDrawable="@android:color/transparent"
+                            tools:ignore="TextContrastCheck" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:id="@+id/calendarAndRemoveDateLL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.5">
+
+                        <ImageView
+                            android:id="@+id/removeDateImageView"
+                            style="@style/customIcon"
+                            android:layout_marginEnd="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:onClick="@{() -> fragmentsUtilityClassVariable.clearInput(taskDateTextInputEditText)}"
+                            android:src="@drawable/remove_icon"
+                            android:visibility="gone"
+                            android:contentDescription="@string/clear_date_input"/>
+
+                        <ImageView
+                            android:id="@+id/calendarImageView"
+                            style="@style/customIcon"
+                            android:layout_weight="1"
+                            android:onClick="@{() -> fragmentCreateTaskDataBindingVariable.showDatePickerAndGetDate(taskDateTextInputEditText)}"
+                            android:src="@drawable/calendar_icon"
+                            android:contentDescription="@string/show_date_pciker"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.5" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/timeOptionCL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_7sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/dateOptionCL">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/timeTextInputLayout"
+                        style="@style/customTextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/timeAndRemoveTimeLL"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.5">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/taskTimeTextInputEditText"
+                            style="@style/customTextInputEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/select_time"
+                            android:maxLength="8"
+                            android:textCursorDrawable="@android:color/transparent"
+                            android:inputType="@{InputType.TYPE_NULL}"
+                            android:onTextChanged="@{(s, start, count, before) -> fragmentsUtilityClassVariable.timeTextInputEditTextTextWatcher(s, removeTimeImageView)}"
+                            android:onFocusChange="@{(v, hasFocus) -> fragmentCreateTaskDataBindingVariable.onTimeTextInputEditTextFocus(hasFocus)}"
+                            android:onClick="@{() -> fragmentCreateTaskDataBindingVariable.showTimePickerAndGetTime(taskTimeTextInputEditText)}" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:id="@+id/timeAndRemoveTimeLL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.5">
+
+                        <ImageView
+                            android:id="@+id/removeTimeImageView"
+                            style="@style/customIcon"
+                            android:layout_marginEnd="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:onClick="@{() -> fragmentsUtilityClassVariable.clearInput(taskTimeTextInputEditText)}"
+                            android:src="@drawable/remove_icon"
+                            android:visibility="gone"
+                            android:contentDescription="@string/clear_time_input"/>
+
+                        <ImageView
+                            android:id="@+id/timeImageView"
+                            style="@style/customIcon"
+                            android:layout_weight="1"
+                            android:onClick="@{() -> fragmentCreateTaskDataBindingVariable.showTimePickerAndGetTime(taskTimeTextInputEditText)}"
+                            android:src="@drawable/time_icon"
+                            android:contentDescription="@string/show_time_picker"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.5" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/saveTaskFAB"
+            style="@style/customFloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:onClick="@{() -> fragmentCreateTaskDataBindingVariable.insertTaskToRoom()}"
+            android:src="@drawable/done_icon"
+            android:contentDescription="@string/save_task"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

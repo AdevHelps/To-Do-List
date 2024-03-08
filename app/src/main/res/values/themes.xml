@@ -1,0 +1,92 @@
+<resources>
+    <style name="Base.Theme.ToDoList" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:textColorHint">@color/textHint</item>
+        <item name="colorPrimary">@color/green</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorSecondary">@color/light_secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/light_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/light_tertiary</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="colorTertiaryContainer">@color/light_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/white</item>
+        <item name="colorError">@color/light_error</item>
+        <item name="colorErrorContainer">@color/light_errorContainer</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="colorOnErrorContainer">@color/light_onErrorContainer</item>
+        <item name="android:colorBackground">@color/grey</item>
+        <item name="colorOnBackground">@color/light_onBackground</item>
+        <item name="colorSurface">@color/light_surface</item>
+        <item name="colorOnSurface">@color/light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/light_surfaceVariant</item>
+        <item name="colorOutline">@color/light_outline</item>
+        <item name="colorOnSurfaceInverse">@color/light_inverseOnSurface</item>
+        <item name="colorSurfaceInverse">@color/light_inverseSurface</item>
+        <item name="colorPrimaryInverse">@color/light_inversePrimary</item>
+    </style>
+
+    <style name="customToolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="background">@android:color/transparent</item>
+        <item name="titleTextColor">@color/white</item>
+    </style>
+
+    <style name="customCheckbox">
+        <item name="background">@android:color/transparent</item>
+    </style>
+
+    <style name="customTextViewBase">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="customTaskTextView" parent="customTextViewBase">
+        <item name="android:text">What is to be done ?</item>
+    </style>
+
+    <style name="customTaskDateTextView" parent="customTextViewBase">
+        <item name="android:text">Due date</item>
+    </style>
+
+    <style name="customTextInputLayout">
+        <item name="hintEnabled">false</item>
+    </style>
+
+    <style name="customTextInputEditText">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="paddingStart">@dimen/_5sdp</item>
+        <item name="paddingEnd">@dimen/_5sdp</item>
+        <item name="android:textColorHighlight">@color/green</item>
+    </style>
+
+    <style name="customIcon">
+        <item name="android:layout_width">@dimen/_22sdp</item>
+        <item name="android:layout_height">@dimen/_22sdp</item>
+    </style>
+
+    <style name="customDatePicker" parent="@style/ThemeOverlay.Material3.MaterialCalendar">
+        <item name="colorOnSurfaceVariant">@color/light_onSurfaceVariant</item>
+    </style>
+
+    <style name="customTimePicker" parent="ThemeOverlay.Material3.MaterialTimePicker">
+        <item name="colorOnSurfaceVariant">@color/light_onSurfaceVariant</item>
+    </style>
+
+    <style name="customAlertDialog">
+        <item name="colorOnSurfaceVariant">@color/light_onSurfaceVariant</item>
+    </style>
+
+    <style name="customFloatingActionButton">
+        <item name="backgroundTint">@color/green</item>
+        <item name="android:layout_marginEnd">@dimen/_13sdp</item>
+        <item name="android:layout_marginBottom">@dimen/_13sdp</item>
+    </style>
+
+    <style name="Theme.ToDoList" parent="Base.Theme.ToDoList" />
+</resources>
