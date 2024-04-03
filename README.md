@@ -3,16 +3,14 @@
   <a href="https://android-arsenal.com/api?level=26"><img alt="API" src="https://img.shields.io/badge/API-29%2B-brightgreen.svg?style=flat"/></a>
 </p>
 
-# Screenshots:
 <table>
    <tr>
-    <td align="center"><img src="https://github.com/AdevHelps/Watch-Guide/assets/149101953/5235c962-3a8c-4581-b2f9-300864b2b837" width="300" alt="Screenshot 1"></td>
-   <td align="center"><img src="https://github.com/AdevHelps/Watch-Guide/assets/149101953/5fc8422a-6889-4e02-ab4e-32e7a968caed" width="300" alt="Screenshot 1"></td>
-   <td align="center"><img src="https://github.com/AdevHelps/Watch-Guide/assets/149101953/077d19b0-ac56-4f6b-8491-b9f3ea3d9b35" width="300" alt="Screenshot 1"></td>
-   <td align="center"><img src="https://github.com/AdevHelps/Watch-Guide/assets/149101953/3d513d10-53d4-48a9-a0dd-09237761030f" width="300" alt="Screenshot 1"></td>
-   <td align="center"><img src="https://github.com/AdevHelps/Watch-Guide/assets/149101953/04a876f5-81be-4540-a778-dbc293676d54" width="300" alt="Screenshot 1"></td>
-   <td align="center"><img src="https://github.com/AdevHelps/Watch-Guide/assets/149101953/369d328c-af86-457e-a1a5-cc9538fbece9" width="300" alt="Screenshot 1"></td>
-   <td align="center"><img src="https://github.com/AdevHelps/Watch-Guide/assets/149101953/695c12aa-63ec-4a59-b9ce-0f8174f5c6fc" width="300" alt="Screenshot 1"></td>
+    <td align="center"><img src="https://github.com/AdevHelps/To-Do-List/assets/149101953/31cb0dd3-54c1-4606-b36d-bcef3bf93c82" width="300" alt="Screenshot 1"></td>
+    <td align="center"><img src="https://github.com/AdevHelps/To-Do-List/assets/149101953/e41cdcd9-e18d-4a3b-abbc-d145f04a9674" width="300" alt="Screenshot 1"></td>
+    <td align="center"><img src="https://github.com/AdevHelps/To-Do-List/assets/149101953/00143377-a429-4987-978c-0e11720615f7" width="300" alt="Screenshot 1"></td>
+    <td align="center"><img src="https://github.com/AdevHelps/To-Do-List/assets/149101953/342582d0-1c46-44bb-ac4b-0186c62db08e" width="300" alt="Screenshot 1"></td>
+    <td align="center"><img src="https://github.com/AdevHelps/To-Do-List/assets/149101953/82556ac6-50f7-404f-9c74-48bdf85f5ba2" width="300" alt="Screenshot 1"></td>
+    <td align="center"><img src="https://github.com/AdevHelps/To-Do-List/assets/149101953/c0c8c084-a193-4589-9a85-ab5243eed394" width="300" alt="Screenshot 1"></td>
   </tr>
 </table>
 

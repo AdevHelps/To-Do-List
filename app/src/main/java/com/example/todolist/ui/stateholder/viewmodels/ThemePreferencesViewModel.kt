@@ -1,4 +1,4 @@
-package com.example.todolist.ui.stateholder.viewmodels
+package com.example.todolist.ui.stateholder
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,27 +7,31 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class ThemePreferencesViewModel @Inject constructor(
-    private val appThemeRepositoryInterface: AppThemeRepositoryInterface
-): ViewModel() {
+class ThemePreferencesViewModel @Inject constructor(): ViewModel() {
 
-    fun checkIfPreferencesExist(): MutableLiveData<Boolean> {
+    @Inject lateinit var appThemeRepositoryInterface: AppThemeRepositoryInterface
+
+    fun checkPrefsExistence(): MutableLiveData<Boolean> {
         val preferencesExistLiveData = MutableLiveData<Boolean>()
-        preferencesExistLiveData.value = appThemeRepositoryInterface.checkIfPreferencesExist()
+        preferencesExistLiveData.value = appThemeRepositoryInterface.checkPrefsExistence()
         return preferencesExistLiveData
     }
 
-    fun createDarkModePreferences() {
-        appThemeRepositoryInterface.createDarkModePreferences()
+    fun createThemePrefs() {
+        appThemeRepositoryInterface.createThemePrefs()
     }
 
-    fun passDarkModeStateToPreferences(state: Int) {
-        appThemeRepositoryInterface.passDarkModeStateToPreferences(state)
+    fun passThemeStateToPrefs(state: Int) {
+        appThemeRepositoryInterface.passThemeStateToPrefs(state)
     }
 
-    fun getDarkModePreferences(): MutableLiveData<Int> {
+    fun getThemeStateFromPrefs(): MutableLiveData<Int> {
         val darkModeStateLiveData = MutableLiveData<Int>()
-        darkModeStateLiveData.value = appThemeRepositoryInterface.getDarkModeStateFromPreferences()
+        darkModeStateLiveData.value = appThemeRepositoryInterface.getThemeStateFromPrefs()
         return darkModeStateLiveData
+    }
+
+    fun clearPrefs() {
+        appThemeRepositoryInterface.clearPrefs()
     }
 }

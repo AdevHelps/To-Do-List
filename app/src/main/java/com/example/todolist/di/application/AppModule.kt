@@ -8,17 +8,25 @@ import android.content.Context
 import com.example.todolist.application.objects.ApplicationDateFormat
 import com.example.todolist.application.objects.ApplicationTimeAndDateFormat
 import com.example.todolist.application.objects.ApplicationTimeFormat
-import com.example.todolist.util.CheckTaskIsPastOrNotSpecified
+import com.example.todolist.util.CheckTaskIsPastOrNotSpecifiedUtility
 import com.example.todolist.util.NotificationsUtility
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import java.text.SimpleDateFormat
+import javax.inject.Named
 
 @Module
 @InstallIn(SingletonComponent::class)
 @SuppressLint("SimpleDateFormat")
 object AppModule {
+
+    @Provides
+    @Named("timeFormat")
+    fun access(): SimpleDateFormat {
+        return SimpleDateFormat("hh:mm a")
+    }
 
     @Provides
     fun provideCustomDateFormat(): ApplicationDateFormat {
@@ -38,14 +46,14 @@ object AppModule {
     @Provides
     fun provideNotificationsUtility(
         alarmManager: AlarmManager,
-        taskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecified
+        taskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecifiedUtility
     ): NotificationsUtility {
         return NotificationsUtility(alarmManager, taskIsPastOrNotSpecified)
     }
 
     @Provides
-    fun provideCheckTaskIsPastOrNotSpecified(): CheckTaskIsPastOrNotSpecified {
-        return CheckTaskIsPastOrNotSpecified()
+    fun provideCheckTaskIsPastOrNotSpecified(): CheckTaskIsPastOrNotSpecifiedUtility {
+        return CheckTaskIsPastOrNotSpecifiedUtility()
     }
 
     @Provides

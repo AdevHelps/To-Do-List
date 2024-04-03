@@ -17,12 +17,12 @@ abstract class InterfacesBinder {
 
     @Binds
     abstract fun bindTasksRepositoryInterface(
-        tasksRepositoryImpl: TasksRepositoryInterfaceImpl
+        tasksRepositoryInterfaceImpl: TasksRepositoryInterfaceImpl
     ): TasksRepositoryInterface
 
     @Binds
     abstract fun bindAppThemeRepositoryInterface(
-        appThemeRepositoryImpl: AppThemeRepositoryInterfaceImpl
+        appThemeRepositoryInterfaceImpl: AppThemeRepositoryInterfaceImpl
     ): AppThemeRepositoryInterface
 
     @Binds

@@ -1,4 +1,4 @@
-package com.example.todolist.ui.stateholder.viewmodels
+package com.example.todolist.ui.stateholder
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class TasksViewModel @Inject constructor(
     private val tasksRepositoryInterface: TasksRepositoryInterface
 ): ViewModel() {
-
+    
     val listIsEmptyLiveData = MutableLiveData<Boolean>()
 
     fun getRowCount(): MutableLiveData<Int> {
