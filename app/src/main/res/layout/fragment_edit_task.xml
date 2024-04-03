@@ -36,18 +36,8 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:title="Edit Task">
-
-            <ImageView
-                android:id="@+id/deleteTaskEditFragmentIV"
-                android:layout_width="@dimen/_24sdp"
-                android:layout_height="@dimen/_24sdp"
-                android:layout_gravity="end"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:onClick="@{() -> fragmentEditTaskDataBindingVariable.showDeleteTaskDialogToRemoveTask()}"
-                android:src="@drawable/delete_icon"
-                android:contentDescription="@string/delete_task"/>
-        </com.google.android.material.appbar.MaterialToolbar>
+            app:title="Edit Task"
+            app:menu="@menu/edit_tak_top_app_bar_menu" />
 
         <ScrollView
             android:layout_width="match_parent"
@@ -98,7 +88,7 @@
                     style="@style/customCheckbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onCheckedChanged="@{(view, checked) -> fragmentEditTaskDataBindingVariable.showDeleteTaskDialogToFinishTask()}"
+                    android:onCheckedChanged="@{(view, checked) -> fragmentEditTaskDataBindingVariable.showDeleteTaskDialog()}"
                     android:text="@string/task_finished"
                     android:textColor="@color/white"
                     app:layout_constraintStart_toStartOf="@+id/editTaskTextInputLayout"

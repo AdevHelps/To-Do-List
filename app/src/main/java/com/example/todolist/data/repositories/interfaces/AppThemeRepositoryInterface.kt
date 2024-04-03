@@ -2,11 +2,13 @@ package com.example.todolist.data.repositories.interfaces
 
 interface AppThemeRepositoryInterface {
 
-    fun checkIfPreferencesExist(): Boolean
+    fun checkPrefsExistence(): Boolean
 
-    fun createDarkModePreferences()
+    fun createThemePrefs()
 
-    fun passDarkModeStateToPreferences(state: Int)
+    fun passThemeStateToPrefs(state: Int)
 
-    fun getDarkModeStateFromPreferences(): Int
+    fun getThemeStateFromPrefs(): Int
+
+    fun clearPrefs()
 }

@@ -1,4 +1,4 @@
-package com.example.todolist.ui.uielements.recyclerviews
+package com.example.todolist.ui.uielements.recyclerviews.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -11,10 +11,11 @@ import com.example.todolist.domain.models.dataclasses.Task
 import com.example.todolist.domain.models.enumclasses.TaskTypes
 import com.example.todolist.databinding.TaskTypeDesignBinding
 import com.example.todolist.ui.stateholder.viewmodels.TasksViewModel
-import com.example.todolist.util.CheckTaskIsPastOrNotSpecified
+import com.example.todolist.ui.uielements.recyclerviews.TasksRecyclerViewInterface
+import com.example.todolist.util.CheckTaskIsPastOrNotSpecifiedUtility
 
 class TaskTypesRecyclerViewAdapter(
-    private val checkTaskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecified,
+    private val checkTaskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecifiedUtility,
     private val overdueTasksList: Pair<String, MutableList<Task>>,
     private val todayTasksList: Pair<String, MutableList<Task>>,
     private val tomorrowTasksList: Pair<String, MutableList<Task>>,

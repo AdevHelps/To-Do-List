@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class NotificationsUtility @Inject constructor(
     private val alarmManager: AlarmManager,
-    private val taskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecified
+    private val taskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecifiedUtility
 ){
 
     private val dateFormat = ApplicationDateFormat.access()

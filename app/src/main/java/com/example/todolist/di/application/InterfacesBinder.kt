@@ -1,4 +1,4 @@
-package com.example.todolist.di
+package com.example.todolist.di.application
 
 import com.example.todolist.data.repositories.implementation.AppThemeRepositoryInterfaceImpl
 import com.example.todolist.data.repositories.implementation.TasksRepositoryInterfaceImpl

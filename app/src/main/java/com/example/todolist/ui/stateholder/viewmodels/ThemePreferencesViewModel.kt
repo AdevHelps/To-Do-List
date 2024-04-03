@@ -1,4 +1,4 @@
-package com.example.todolist.ui.stateholder
+package com.example.todolist.ui.stateholder.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,9 +7,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class ThemePreferencesViewModel @Inject constructor(): ViewModel() {
-
-    @Inject lateinit var appThemeRepositoryInterface: AppThemeRepositoryInterface
+class ThemePreferencesViewModel @Inject constructor(
+    private val appThemeRepositoryInterface: AppThemeRepositoryInterface
+): ViewModel() {
 
     fun checkPrefsExistence(): MutableLiveData<Boolean> {
         val preferencesExistLiveData = MutableLiveData<Boolean>()

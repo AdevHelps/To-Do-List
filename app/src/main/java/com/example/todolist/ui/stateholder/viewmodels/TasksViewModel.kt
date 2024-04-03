@@ -1,4 +1,4 @@
-package com.example.todolist.ui.stateholder
+package com.example.todolist.ui.stateholder.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -6,7 +6,6 @@ import com.example.todolist.application.objects.ApplicationTimeFormat
 import com.example.todolist.domain.models.dataclasses.Task
 import com.example.todolist.domain.models.enumclasses.TaskTypes
 import com.example.todolist.data.repositories.interfaces.TasksRepositoryInterface
-import com.example.todolist.domain.usecases.ConvertStringTimeToSecondsUseCase
 import com.example.todolist.domain.usecases.GetTaskMillisFromTaskUseCase
 import com.example.todolist.domain.usecases.GetTaskTypeFromDateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,9 +14,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TasksViewModel @Inject constructor(
-    private val tasksRepositoryInterface: TasksRepositoryInterface
+    private val tasksRepositoryInterface: TasksRepositoryInterface,
+    private val getTaskMillisFromTaskUseCase: GetTaskMillisFromTaskUseCase,
+    private val getTaskTypeFromDateUseCase: GetTaskTypeFromDateUseCase
 ): ViewModel() {
-    
+
     val listIsEmptyLiveData = MutableLiveData<Boolean>()
 
     fun getRowCount(): MutableLiveData<Int> {
@@ -25,13 +26,6 @@ class TasksViewModel @Inject constructor(
         rowCountLiveData.value = tasksRepositoryInterface.getRowCount()
         return rowCountLiveData
     }
-
-    fun stringTimeToSeconds(string: String?): MutableLiveData<Int> {
-        val stringTimeToSecondsLiveData = MutableLiveData<Int>()
-        stringTimeToSecondsLiveData.value = ConvertStringTimeToSecondsUseCase(string).invoke()
-        return stringTimeToSecondsLiveData
-    }
-
     fun hoursAndMinutesInSecondsToTime(hours: Long, minutes: Long): MutableLiveData<String?> {
         val secondsToTimeLiveData = MutableLiveData<String?>()
         val timeFormat = ApplicationTimeFormat.access()
@@ -50,10 +44,7 @@ class TasksViewModel @Inject constructor(
     : MutableLiveData<Long> {
 
         val taskMillisLiveData = MutableLiveData<Long>()
-        taskMillisLiveData.value = GetTaskMillisFromTaskUseCase(
-                selectedDate,
-                selectedTimeInString
-            ).invoke()
+        taskMillisLiveData.value = getTaskMillisFromTaskUseCase(selectedDate, selectedTimeInString)
         return taskMillisLiveData
     }
 
@@ -102,7 +93,7 @@ class TasksViewModel @Inject constructor(
 
     fun getTaskTypeFromDate(taskDate: Date?): MutableLiveData<Int> {
         val taskTypeLiveData = MutableLiveData<Int>()
-        taskTypeLiveData.value = GetTaskTypeFromDateUseCase(taskDate).invoke()
+        taskTypeLiveData.value = getTaskTypeFromDateUseCase(taskDate)
         return taskTypeLiveData
     }
 

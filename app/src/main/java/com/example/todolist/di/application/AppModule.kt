@@ -1,4 +1,4 @@
-package com.example.todolist.di
+package com.example.todolist.di.application
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -14,19 +14,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import java.text.SimpleDateFormat
-import javax.inject.Named
 
 @Module
 @InstallIn(SingletonComponent::class)
 @SuppressLint("SimpleDateFormat")
 object AppModule {
-
-    @Provides
-    @Named("timeFormat")
-    fun access(): SimpleDateFormat {
-        return SimpleDateFormat("hh:mm a")
-    }
 
     @Provides
     fun provideCustomDateFormat(): ApplicationDateFormat {

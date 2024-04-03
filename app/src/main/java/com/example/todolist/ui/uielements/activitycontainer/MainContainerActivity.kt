@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainContainerActivity @Inject constructor(
-) : AppCompatActivity(), FragmentToActivityContainerInterface {
+): AppCompatActivity(), FragmentToActivityContainerInterface {
 
     private lateinit var binding: ActivityMainContainerBinding
 

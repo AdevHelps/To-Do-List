@@ -1,7 +1,7 @@
 package com.example.todolist.data.repositories.implementation
 
 import android.app.Application
-import com.example.todolist.data.datasources.DarkModePreferences
+import com.example.todolist.data.datasources.ThemePreferences
 import com.example.todolist.data.repositories.interfaces.AppThemeRepositoryInterface
 import javax.inject.Inject
 
@@ -9,23 +9,27 @@ class AppThemeRepositoryInterfaceImpl @Inject constructor(
     applicationContext: Application
 ): AppThemeRepositoryInterface {
 
-    private val darkModeStatePreferences = DarkModePreferences(applicationContext)
+    private val themePreferences = ThemePreferences(applicationContext)
 
 
-    override fun checkIfPreferencesExist(): Boolean {
-        return darkModeStatePreferences.checkIfPreferencesExist()
+    override fun checkPrefsExistence(): Boolean {
+        return themePreferences.checkPreferencesExistence()
     }
 
-    override fun createDarkModePreferences() {
-        darkModeStatePreferences.createDarkModePreferences()
+    override fun createThemePrefs() {
+        themePreferences.createThemePreferences()
     }
 
-    override fun passDarkModeStateToPreferences(state: Int) {
-        darkModeStatePreferences.passDarkModeStateToPreferences(state)
+    override fun passThemeStateToPrefs(state: Int) {
+        themePreferences.passThemeStateToPrefs(state)
     }
 
 
-    override fun getDarkModeStateFromPreferences(): Int {
-        return darkModeStatePreferences.getDarkModeStateFromPreferences()
+    override fun getThemeStateFromPrefs(): Int {
+        return themePreferences.getThemeStateFromPrefs()
+    }
+
+    override fun clearPrefs() {
+        themePreferences.clearPrefs()
     }
 }

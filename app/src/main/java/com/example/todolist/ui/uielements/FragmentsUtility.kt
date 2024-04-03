@@ -31,6 +31,7 @@ class FragmentsUtility {
         fragmentActivity: FragmentActivity
     ) {
         textInputEditText.requestFocus()
+        textInputEditText.setSelection(textInputEditText.text.toString().length)
         val inputMethodManager =
             fragmentActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.showSoftInput(textInputEditText, InputMethodManager.SHOW_IMPLICIT)
@@ -87,10 +88,11 @@ class FragmentsUtility {
     ) {
         MaterialAlertDialogBuilder(context, R.style.customAlertDialog)
             .setMessage(message)
-            .setPositiveButton("DISMISS") { dialog, _ -> dialog.dismiss() }
-            .setNegativeButton("QUIT") { dialog, _ ->
+            .setPositiveButton("DISMISS") { _, _ ->
 
-                dialog.dismiss()
+            }
+            .setNegativeButton("QUIT") { _, _ ->
+
                 navController.popBackStack()
             }
             .show()
@@ -121,6 +123,17 @@ class FragmentsUtility {
             removeTimeInputImageView.visibility = View.VISIBLE
         } else {
             removeTimeInputImageView.visibility = View.GONE
+        }
+    }
+
+    fun stringTimeToSeconds(stringTime: String): Int {
+        val timeFormat = ApplicationTimeFormat.access()
+
+        return if (stringTime.isEmpty()) 0
+        else {
+            val timeInDate = timeFormat.parse(stringTime)!!
+            val timeInSeconds = timeInDate.time / 1000
+            timeInSeconds.toInt()
         }
     }
 

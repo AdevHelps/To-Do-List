@@ -85,7 +85,6 @@ class TasksRepositoryInterfaceImpl @Inject constructor(
         }
     }
 
-
     override fun deleteTaskToDao(taskID: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             tasksRoomDao.deleteTask(taskID)

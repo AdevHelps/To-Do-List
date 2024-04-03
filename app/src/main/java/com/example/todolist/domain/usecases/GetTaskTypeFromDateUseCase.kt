@@ -5,10 +5,9 @@ import com.example.todolist.domain.models.enumclasses.TaskTypes
 import java.util.Calendar
 import java.util.Date
 
-class GetTaskTypeFromDateUseCase(private val taskDate: Date?) {
+class GetTaskTypeFromDateUseCase {
 
-    operator fun invoke(): Int {
-
+    operator fun invoke(taskDate: Date?): Int {
         val dateFormat = ApplicationDateFormat.access()
 
         val currentDate = Date()

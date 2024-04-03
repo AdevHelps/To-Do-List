@@ -1,4 +1,4 @@
-package com.example.todolist.ui.uielements.recyclerviews
+package com.example.todolist.ui.uielements.recyclerviews.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,12 +10,13 @@ import com.example.todolist.R
 import com.example.todolist.application.objects.ApplicationDateFormat
 import com.example.todolist.domain.models.dataclasses.Task
 import com.example.todolist.databinding.TaskItemDesignBinding
-import com.example.todolist.util.CheckTaskIsPastOrNotSpecified
+import com.example.todolist.ui.uielements.recyclerviews.TasksRecyclerViewInterface
+import com.example.todolist.util.CheckTaskIsPastOrNotSpecifiedUtility
 import java.util.Date
 
 class TasksRecyclerViewAdapter(
     private val context: Context,
-    private val checkTaskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecified,
+    private val checkTaskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecifiedUtility,
     private val tasksList: MutableList<Task>,
     private val tasksRecyclerViewInterface: TasksRecyclerViewInterface
 ) : RecyclerView.Adapter<TasksRecyclerViewAdapter.TaskViewHolder>() {

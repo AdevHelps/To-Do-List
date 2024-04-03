@@ -18,11 +18,13 @@ import com.example.todolist.domain.models.dataclasses.Task
 import com.example.todolist.domain.models.dataclasses.TaskParcel
 import com.example.todolist.data.repositories.interfaces.TasksRepositoryInterface
 import com.example.todolist.databinding.FragmentEditTaskBinding
+import com.example.todolist.domain.usecases.GetTaskMillisFromTaskUseCase
+import com.example.todolist.domain.usecases.GetTaskTypeFromDateUseCase
 import com.example.todolist.ui.stateholder.viewmodelfactories.TasksViewModelFactory
 import com.example.todolist.ui.stateholder.viewmodels.TasksViewModel
 import com.example.todolist.ui.uielements.activitycontainer.FragmentToActivityContainerInterface
 import com.example.todolist.ui.uielements.FragmentsUtility
-import com.example.todolist.util.CheckTaskIsPastOrNotSpecified
+import com.example.todolist.util.CheckTaskIsPastOrNotSpecifiedUtility
 import com.example.todolist.util.NotificationsUtility
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -37,13 +39,14 @@ class EditTaskFragment: Fragment(R.layout.fragment_edit_task) {
     private lateinit var tasksViewModel: TasksViewModel
     private val args: EditTaskFragmentArgs by navArgs()
     @Inject lateinit var fragmentToActivityContainerInterface: FragmentToActivityContainerInterface
-    @Inject lateinit var tasksRoomDatabaseRepositoryInterface: TasksRepositoryInterface
+    @Inject lateinit var tasksRepositoryInterface: TasksRepositoryInterface
+    @Inject lateinit var getTaskMillisFromTaskUseCase: GetTaskMillisFromTaskUseCase
+    @Inject lateinit var getTaskTypeFromDateUseCase: GetTaskTypeFromDateUseCase
     @Inject lateinit var alarmManager: AlarmManager
     @Inject lateinit var notificationsUtility: NotificationsUtility
     @Inject lateinit var fragmentsUtility: FragmentsUtility
-    @Inject lateinit var checkTaskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecified
+    @Inject lateinit var checkTaskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecifiedUtility
     private val dateFormat = ApplicationDateFormat.access()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,7 +61,11 @@ class EditTaskFragment: Fragment(R.layout.fragment_edit_task) {
             false
         )
 
-        val tasksViewModelFactory = TasksViewModelFactory(tasksRoomDatabaseRepositoryInterface)
+        val tasksViewModelFactory = TasksViewModelFactory(
+            tasksRepositoryInterface,
+            getTaskMillisFromTaskUseCase,
+            getTaskTypeFromDateUseCase
+        )
         tasksViewModel = ViewModelProvider(
             this@EditTaskFragment,
             tasksViewModelFactory
@@ -74,7 +81,6 @@ class EditTaskFragment: Fragment(R.layout.fragment_edit_task) {
             lifecycleOwner = this@EditTaskFragment
             root
         }
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -109,45 +115,48 @@ class EditTaskFragment: Fragment(R.layout.fragment_edit_task) {
                     val updatedTimeString =
                         editTaskTimeTextInputEditText.text.toString().ifEmpty { null }
 
-                    tasksViewModel.stringTimeToSeconds(
+                    val updateTimeInSeconds = fragmentsUtility.stringTimeToSeconds(
                         editTaskTimeTextInputEditText.text.toString()
-                    ).observe(viewLifecycleOwner) { updateTimeInSeconds ->
+                    )
 
-                        val originalTask = args.taskDataArgument
+                    val originalTask = args.taskDataArgument
 
-                        val updatedTask = TaskParcel(
-                            passedTaskData.position,
-                            passedTaskData.taskID,
-                            editTaskTextInputEditText.text.toString(),
-                            editedDate,
-                            updateTimeInSeconds,
-                            updatedTimeString,
+                    val updatedTask = TaskParcel(
+                        passedTaskData.position,
+                        passedTaskData.taskID,
+                        editTaskTextInputEditText.text.toString(),
+                        editedDate,
+                        updateTimeInSeconds,
+                        updatedTimeString,
+                    )
+
+                    if (originalTask != updatedTask) {
+                        fragmentsUtility.checkBeforeQuitingDialog(
+                            requireContext(),
+                            "Quit without saving changes?",
+                            findNavController()
                         )
-
-                        if (originalTask != updatedTask) {
-                            fragmentsUtility.checkBeforeQuitingDialog(
-                                requireContext(),
-                                "Quit without saving changes?",
-                                findNavController()
-                            )
-                        } else findNavController().popBackStack()
-                    }
+                    } else findNavController().popBackStack()
                 }
             }
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+            editTaskFragmentToolbar.setOnMenuItemClickListener { menuItem ->
+                if (menuItem.itemId == R.id.deleteTaskItem) {
+
+                    deleteTaskDialog(
+                        "Remove task?",
+                        null,
+                        "REMOVE",
+                        "Task removed"
+                    )
+                }
+                true
+            }
         }
     }
 
-    fun showDeleteTaskDialogToRemoveTask() {
-        deleteTaskDialog(
-            "Remove task?",
-            null,
-            "REMOVE",
-            "Task removed"
-        )
-    }
-
-    fun showDeleteTaskDialogToFinishTask() {
+    fun showDeleteTaskDialog() {
         deleteTaskDialog(
             "Finish task?",
             uncheckCheckBox,
@@ -210,8 +219,8 @@ class EditTaskFragment: Fragment(R.layout.fragment_edit_task) {
                     timePicker.hour.toLong(),
                     timePicker.minute.toLong()
                 ).observe(viewLifecycleOwner) { newSelectedTime ->
-                        binding.editTaskTimeTextInputEditText.setText(newSelectedTime)
-                    }
+                    binding.editTaskTimeTextInputEditText.setText(newSelectedTime)
+                }
 
                 val taskDate = dateFormat.parse(editTaskDateTextInputEditText.text.toString())
                 val taskIsPast = checkTaskIsPastOrNotSpecified.check(
@@ -259,40 +268,39 @@ class EditTaskFragment: Fragment(R.layout.fragment_edit_task) {
                 passedTaskData.taskID
             )
 
-            tasksViewModel.stringTimeToSeconds(editTaskTimeTextInputEditText.text.toString())
-                .observe(viewLifecycleOwner) { taskTimeInSeconds ->
+            val taskTimeInSeconds = fragmentsUtility.stringTimeToSeconds(
+                editTaskTimeTextInputEditText.text.toString()
+            )
+            val newTask = Task(
+                passedTaskData.taskID,
+                editedTask.toString(),
+                taskDate,
+                taskTimeInSeconds,
+                selectedTimeInString,
+            )
+            tasksViewModel.updateTask(newTask)
 
-                    val newTask = Task(
-                        passedTaskData.taskID,
+            tasksViewModel.getTaskMillisFromTask(taskDate, selectedTimeInString)
+                .observe(viewLifecycleOwner) { taskMillis ->
+
+                    notificationsUtility.rescheduleTask(
+                        requireContext(),
                         editedTask.toString(),
                         taskDate,
-                        taskTimeInSeconds,
                         selectedTimeInString,
+                        taskMillis,
+                        passedTaskData.taskID
                     )
-                    tasksViewModel.updateTask(newTask)
+                }
 
-                    tasksViewModel.getTaskMillisFromTask(taskDate, selectedTimeInString)
-                        .observe(viewLifecycleOwner) { taskMillis ->
+            tasksViewModel.getTaskTypeFromDate(taskDate)
+                .observe(viewLifecycleOwner) { taskType ->
 
-                            notificationsUtility.rescheduleTask(
-                                requireContext(),
-                                editedTask.toString(),
-                                taskDate,
-                                selectedTimeInString,
-                                taskMillis,
-                                passedTaskData.taskID
-                            )
-                    }
-
-                    tasksViewModel.getTaskTypeFromDate(taskDate)
-                        .observe(viewLifecycleOwner) { taskType ->
-
-                            val action =
-                                EditTaskFragmentDirections.actionEditTaskFragmentToTasksList(
-                                    taskType = taskType
-                                )
-                        findNavController().navigate(action)
-                    }
+                    val action =
+                        EditTaskFragmentDirections.actionEditTaskFragmentToTasksList(
+                            taskType = taskType
+                        )
+                    findNavController().navigate(action)
                 }
         }
     }
@@ -301,17 +309,15 @@ class EditTaskFragment: Fragment(R.layout.fragment_edit_task) {
         message: String,
         uncheckCheckBox: (() -> Unit)?,
         negativeButtonText: String,
-        snackBarText: String,
+        snackBarText: String
     ) {
         MaterialAlertDialogBuilder(requireContext(), R.style.customAlertDialog)
             .setMessage(message)
-            .setPositiveButton("CANCEL") { dialog, _ ->
+            .setPositiveButton("CANCEL") { _, _ ->
 
-                dialog.dismiss()
                 uncheckCheckBox?.invoke()
-
             }
-            .setNegativeButton(negativeButtonText) { dialog, _ ->
+            .setNegativeButton(negativeButtonText) { _, _ ->
 
                 val taskID = args.taskDataArgument.taskID
                 tasksViewModel.deleteTask(taskID)
@@ -320,7 +326,6 @@ class EditTaskFragment: Fragment(R.layout.fragment_edit_task) {
 
                 notificationsUtility.cancelNotification(requireContext(), taskID)
 
-                dialog.dismiss()
                 findNavController().popBackStack()
 
                 fragmentToActivityContainerInterface.showTaskSnackBar(

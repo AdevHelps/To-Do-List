@@ -1,8 +1,6 @@
 package com.example.todolist.ui.uielements.fragments
 
 import android.app.AlarmManager
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,14 +23,16 @@ import com.example.todolist.databinding.FragmentTasksListBinding
 import com.example.todolist.domain.models.dataclasses.Task
 import com.example.todolist.domain.models.dataclasses.TaskParcel
 import com.example.todolist.domain.models.enumclasses.ThemeStates
+import com.example.todolist.domain.usecases.GetTaskMillisFromTaskUseCase
+import com.example.todolist.domain.usecases.GetTaskTypeFromDateUseCase
 import com.example.todolist.ui.stateholder.viewmodelfactories.TasksViewModelFactory
 import com.example.todolist.ui.stateholder.viewmodelfactories.ThemePreferencesViewModelFactory
 import com.example.todolist.ui.stateholder.viewmodels.TasksViewModel
 import com.example.todolist.ui.stateholder.viewmodels.ThemePreferencesViewModel
 import com.example.todolist.ui.uielements.activitycontainer.FragmentToActivityContainerInterface
-import com.example.todolist.ui.uielements.recyclerviews.TaskTypesRecyclerViewAdapter
+import com.example.todolist.ui.uielements.recyclerviews.adapters.TaskTypesRecyclerViewAdapter
 import com.example.todolist.ui.uielements.recyclerviews.TasksRecyclerViewInterface
-import com.example.todolist.util.CheckTaskIsPastOrNotSpecified
+import com.example.todolist.util.CheckTaskIsPastOrNotSpecifiedUtility
 import com.example.todolist.util.NotificationsUtility
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,12 +46,14 @@ class TasksList: Fragment(R.layout.fragment_tasks_list), TasksRecyclerViewInterf
     private lateinit var binding: FragmentTasksListBinding
     private lateinit var themePreferencesViewModel: ThemePreferencesViewModel
     private lateinit var tasksViewModel: TasksViewModel
-    @Inject lateinit var tasksRoomDatabaseRepositoryInterface: TasksRepositoryInterface
+    @Inject lateinit var tasksRepositoryInterface: TasksRepositoryInterface
+    @Inject lateinit var getTaskMillisFromTaskUseCase: GetTaskMillisFromTaskUseCase
+    @Inject lateinit var getTaskTypeFromDateUseCase: GetTaskTypeFromDateUseCase
     @Inject lateinit var appThemeRepositoryInterface: AppThemeRepositoryInterface
     @Inject lateinit var fragmentToActivityContainerInterface: FragmentToActivityContainerInterface
     @Inject lateinit var alarmManager: AlarmManager
     @Inject lateinit var notificationsUtility: NotificationsUtility
-    @Inject lateinit var checkTaskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecified
+    @Inject lateinit var checkTaskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecifiedUtility
     private val args: TasksListArgs by navArgs()
 
     override fun onCreateView(
@@ -67,7 +69,11 @@ class TasksList: Fragment(R.layout.fragment_tasks_list), TasksRecyclerViewInterf
             false
         )
 
-        val tasksViewModelFactory = TasksViewModelFactory(tasksRoomDatabaseRepositoryInterface)
+        val tasksViewModelFactory = TasksViewModelFactory(
+            tasksRepositoryInterface,
+            getTaskMillisFromTaskUseCase,
+            getTaskTypeFromDateUseCase
+        )
         tasksViewModel = ViewModelProvider(
             this@TasksList,
             tasksViewModelFactory
@@ -79,11 +85,12 @@ class TasksList: Fragment(R.layout.fragment_tasks_list), TasksRecyclerViewInterf
             themePreferencesViewModelFactory
         )[ThemePreferencesViewModel::class.java]
 
-        themePreferencesViewModel.checkIfPreferencesExist()
+
+        themePreferencesViewModel.checkPrefsExistence()
             .observe(viewLifecycleOwner) { preferencesExist ->
 
                 if (!preferencesExist) {
-                    themePreferencesViewModel.createDarkModePreferences()
+                    themePreferencesViewModel.createThemePrefs()
                 }
             }
 
@@ -103,20 +110,23 @@ class TasksList: Fragment(R.layout.fragment_tasks_list), TasksRecyclerViewInterf
                 when(menuItem.itemId) {
                     R.id.lightModeItemID -> {
                         themePreferencesViewModel
-                            .passDarkModeStateToPreferences(ThemeStates.LIGHT.id)
+                            .passThemeStateToPrefs(ThemeStates.LIGHT.id)
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                         true
                     }
 
                     R.id.darkModeItemID -> {
                         themePreferencesViewModel
-                            .passDarkModeStateToPreferences(ThemeStates.DARK.id)
+                            .passThemeStateToPrefs(ThemeStates.DARK.id)
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                         true
                     }
 
                     R.id.defaultModeItemID -> {
-                        checkSystemThemeMode()
+                        themePreferencesViewModel.clearPrefs()
+                        AppCompatDelegate.setDefaultNightMode(
+                            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                        )
                         true
                     }
 
@@ -124,7 +134,7 @@ class TasksList: Fragment(R.layout.fragment_tasks_list), TasksRecyclerViewInterf
                 }
             }
 
-            themePreferencesViewModel.getDarkModePreferences()
+            themePreferencesViewModel.getThemeStateFromPrefs()
                 .observe(viewLifecycleOwner) { state ->
                 when(state) {
                     ThemeStates.LIGHT.id -> {
@@ -145,55 +155,40 @@ class TasksList: Fragment(R.layout.fragment_tasks_list), TasksRecyclerViewInterf
             }
 
             val owner = viewLifecycleOwner
-            tasksViewModel.also { tasksViewModel ->
-                val todayDate = getTodayAndTomorrowDate().first
-                val tomorrowDate = getTodayAndTomorrowDate().second
+            val todayDate = getTodayAndTomorrowDate().first
+            val tomorrowDate = getTodayAndTomorrowDate().second
 
-                tasksViewModel.getOverdueTasks(todayDate.time)
-                    .observe(owner) { overdueTasksPair ->
-                        tasksViewModel.getTodayTasks(todayDate).observe(owner) { todayTasksPair ->
-                            tasksViewModel.getTomorrowTasks(tomorrowDate)
-                                .observe(owner) { tomorrowTasksPair ->
-                                    tasksViewModel.getLaterTasks(tomorrowDate)
-                                        .observe(owner) { laterTasksPair ->
-                                            tasksViewModel.getNoDateTasks()
-                                                .observe(owner) { noDateTasksPair ->
+            tasksViewModel.getOverdueTasks(todayDate.time).observe(owner) { overdueTasksPair ->
+                    tasksViewModel.getTodayTasks(todayDate).observe(owner) { todayTasksPair ->
+                        tasksViewModel.getTomorrowTasks(tomorrowDate)
+                            .observe(owner) { tomorrowTasksPair ->
+                                tasksViewModel.getLaterTasks(tomorrowDate)
+                                    .observe(owner) { laterTasksPair ->
+                                        tasksViewModel.getNoDateTasks()
+                                            .observe(owner) { noDateTasksPair ->
 
-                                                    val adapter = TaskTypesRecyclerViewAdapter(
-                                                        checkTaskIsPastOrNotSpecified,
-                                                        overdueTasksPair,
-                                                        todayTasksPair,
-                                                        tomorrowTasksPair,
-                                                        laterTasksPair,
-                                                        noDateTasksPair,
-                                                        this@TasksList,
-                                                        requireContext(),
-                                                        this@TasksList.tasksViewModel,
-                                                        viewLifecycleOwner
-                                                    )
-                                                    taskTypesRecyclerViewID.adapter = adapter
-                                                    taskTypesRecyclerViewID.itemAnimator = null
-                                                    taskTypesRecyclerViewID.scrollToPosition(
-                                                        args.taskType
-                                                    )
-                                                }
-                                        }
-                                }
-                        }
+                                                val adapter = TaskTypesRecyclerViewAdapter(
+                                                    checkTaskIsPastOrNotSpecified,
+                                                    overdueTasksPair,
+                                                    todayTasksPair,
+                                                    tomorrowTasksPair,
+                                                    laterTasksPair,
+                                                    noDateTasksPair,
+                                                    this@TasksList,
+                                                    requireContext(),
+                                                    this@TasksList.tasksViewModel,
+                                                    viewLifecycleOwner
+                                                )
+                                                taskTypesRecyclerViewID.adapter = adapter
+                                                taskTypesRecyclerViewID.itemAnimator = null
+                                                taskTypesRecyclerViewID.scrollToPosition(
+                                                    args.taskType
+                                                )
+                                            }
+                                    }
+                            }
                     }
-            }
-        }
-    }
-
-    private fun checkSystemThemeMode() {
-        val systemUiMode = Resources.getSystem().configuration.uiMode
-
-        if (systemUiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
-            themePreferencesViewModel.passDarkModeStateToPreferences(ThemeStates.DEFAULT.id)
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            themePreferencesViewModel.passDarkModeStateToPreferences(ThemeStates.DEFAULT.id)
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
         }
     }
 
@@ -233,14 +228,15 @@ class TasksList: Fragment(R.layout.fragment_tasks_list), TasksRecyclerViewInterf
     private fun permissionsDialog(message: String, positiveButtonMessage: String) {
         MaterialAlertDialogBuilder(requireContext(), R.style.customAlertDialog)
             .setMessage(message)
-            .setPositiveButton(positiveButtonMessage) { dialog, _ ->
+            .setPositiveButton(positiveButtonMessage) { _, _ ->
 
-                dialog.dismiss()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
-            .setNegativeButton("DENY") { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton("DENY") { _, _ ->
+
+            }
             .show()
     }
 
@@ -267,12 +263,11 @@ class TasksList: Fragment(R.layout.fragment_tasks_list), TasksRecyclerViewInterf
     ) {
         MaterialAlertDialogBuilder(requireContext(), R.style.customAlertDialog)
             .setMessage("Remove task?")
-            .setPositiveButton("CANCEL") { dialog, _ ->
+            .setPositiveButton("CANCEL") { _, _ ->
 
-                dialog.dismiss()
                 checkBox.isChecked = false
             }
-            .setNegativeButton("REMOVE") { dialog, _ ->
+            .setNegativeButton("REMOVE") { _, _ ->
 
                 tasksViewModel.deleteTask(taskID)
                 notifyRemoved.invoke()
@@ -280,8 +275,6 @@ class TasksList: Fragment(R.layout.fragment_tasks_list), TasksRecyclerViewInterf
                 notificationsUtility.cancelSchedulingTask(alarmManager, requireContext(), taskID)
 
                 notificationsUtility.cancelNotification(requireContext(), taskID)
-
-                dialog.dismiss()
 
                 fragmentToActivityContainerInterface.showTaskSnackBar(
                     binding.tasksListFragmentContainerCL,

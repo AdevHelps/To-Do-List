@@ -4,7 +4,7 @@ import com.example.todolist.application.objects.ApplicationDateFormat
 import com.example.todolist.application.objects.ApplicationTimeAndDateFormat
 import java.util.Date
 
-class CheckTaskIsPastOrNotSpecified {
+class CheckTaskIsPastOrNotSpecifiedUtility {
 
     private val dateFormat = ApplicationDateFormat.access()
     private val timeAndDateFormat = ApplicationTimeAndDateFormat.access()

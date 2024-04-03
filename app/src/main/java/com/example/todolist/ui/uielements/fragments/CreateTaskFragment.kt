@@ -15,10 +15,12 @@ import com.example.todolist.application.objects.ApplicationDateFormat
 import com.example.todolist.domain.models.dataclasses.Task
 import com.example.todolist.data.repositories.interfaces.TasksRepositoryInterface
 import com.example.todolist.databinding.FragmentCreateTaskBinding
+import com.example.todolist.domain.usecases.GetTaskMillisFromTaskUseCase
+import com.example.todolist.domain.usecases.GetTaskTypeFromDateUseCase
 import com.example.todolist.ui.stateholder.viewmodelfactories.TasksViewModelFactory
 import com.example.todolist.ui.stateholder.viewmodels.TasksViewModel
 import com.example.todolist.ui.uielements.FragmentsUtility
-import com.example.todolist.util.CheckTaskIsPastOrNotSpecified
+import com.example.todolist.util.CheckTaskIsPastOrNotSpecifiedUtility
 import com.example.todolist.util.NotificationsUtility
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,10 +32,12 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
 
     private lateinit var binding: FragmentCreateTaskBinding
     private lateinit var tasksViewModel: TasksViewModel
-    @Inject lateinit var tasksRoomDatabaseRepositoryInterface: TasksRepositoryInterface
+    @Inject lateinit var tasksRepositoryInterface: TasksRepositoryInterface
+    @Inject lateinit var getTaskMillisFromTaskUseCase: GetTaskMillisFromTaskUseCase
+    @Inject lateinit var getTaskTypeFromDateUseCase: GetTaskTypeFromDateUseCase
     @Inject lateinit var notificationsUtility: NotificationsUtility
     @Inject lateinit var fragmentsUtility: FragmentsUtility
-    @Inject lateinit var checkTaskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecified
+    @Inject lateinit var checkTaskIsPastOrNotSpecified: CheckTaskIsPastOrNotSpecifiedUtility
     private val dateFormat = ApplicationDateFormat.access()
 
     override fun onCreateView(
@@ -49,8 +53,11 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             false
         )
 
-        val tasksViewModelFactory =
-            TasksViewModelFactory(tasksRoomDatabaseRepositoryInterface)
+        val tasksViewModelFactory = TasksViewModelFactory(
+            tasksRepositoryInterface,
+            getTaskMillisFromTaskUseCase,
+            getTaskTypeFromDateUseCase
+        )
         tasksViewModel = ViewModelProvider(
             this@CreateTaskFragment,
             tasksViewModelFactory
@@ -170,25 +177,24 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 taskTimeTextInputEditText
             )
 
-            tasksViewModel.stringTimeToSeconds(taskTimeTextInputEditText.text.toString())
-                .observe(viewLifecycleOwner) { selectedTimeInSeconds ->
+            val selectedTimeInSeconds = fragmentsUtility.stringTimeToSeconds(
+                taskTimeTextInputEditText.text.toString()
+            )
+            if (taskTextInputEditText.text.toString().isEmpty()) {
+                Toast.makeText(requireContext(), "Write your task", Toast.LENGTH_SHORT)
+                    .show()
+                return
 
-                    if (taskTextInputEditText.text.toString().isEmpty()) {
-                        Toast.makeText(requireContext(), "Write your task", Toast.LENGTH_SHORT)
-                            .show()
-                        return@observe
+            } else {
+                insertTaskAndSchedule(
+                    task,
+                    selectedDate,
+                    selectedTimeInSeconds,
+                    selectedTimeInString,
+                )
 
-                    } else {
-                        insertTaskAndSchedule(
-                            task,
-                            selectedDate,
-                            selectedTimeInSeconds,
-                            selectedTimeInString,
-                        )
-
-                        findNavController().popBackStack()
-                    }
-                }
+                findNavController().popBackStack()
+            }
         }
     }
 
